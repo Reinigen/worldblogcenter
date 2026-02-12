@@ -4,10 +4,13 @@ import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../hooks'
 import { useGetUserDetailsQuery } from '../services/auth/authService'
 import { setCredentials } from '../../features/auth/authSlice'
+import { useNavigate } from 'react-router'
+import Spinner from './util/Spinner'
 
 const PrivateRoute = ({children}:{ children: React.ReactNode }) => {
     const {userInfo} = useAppSelector((state) => state.auth)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const {data, isFetching} = useGetUserDetailsQuery(undefined, {
         pollingInterval: 900000,
@@ -16,6 +19,13 @@ const PrivateRoute = ({children}:{ children: React.ReactNode }) => {
     useEffect(() => {
         if(data) dispatch(setCredentials(data))
     }, [data, dispatch])
+    useEffect(() => {
+        if(!isFetching && ! data){
+            navigate('/')
+        }
+    }, [isFetching, data, navigate])
+    if (isFetching) return <Spinner />
+    if (!data) return null
     return (
         <div>
             {/* <span>
