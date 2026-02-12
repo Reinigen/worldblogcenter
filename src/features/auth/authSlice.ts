@@ -15,7 +15,7 @@ const userToken = localStorage.getItem('userToken') ? localStorage.getItem('user
 const initialState:AuthState = {
     loading: false,
     userInfo: null, // for user object
-    userToken: null, // for storing the JWT
+    userToken: userToken, // for storing the JWT
     error: null,
     success: false, // for monitoring the registration process.
 }
@@ -38,7 +38,7 @@ const authSlice = createSlice({
     extraReducers(builder) {
         builder
             //register user
-            .addCase(registerUser.pending || userLogin.pending, (state) => {
+            .addCase(registerUser.pending, (state) => {
                 state.loading = true
                 state.error = null
             })
@@ -51,6 +51,10 @@ const authSlice = createSlice({
                 state.error = payload.error.message ? payload.error.message : "undefined"
             })
             //login user
+            .addCase(userLogin.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
             .addCase(userLogin.fulfilled, (state, payload) => {
                 state.loading = false,
                 state.userInfo = payload.payload.user,

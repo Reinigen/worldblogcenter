@@ -17,7 +17,7 @@ export const registerUser = createAsyncThunk('auth/signup', async ({ email, pass
         console.error("There was a problem signing up: ", error);
         return rejectWithValue({success: false, error})
     }
-    return rejectWithValue({success: true, data})
+    return data
     
 })
 
