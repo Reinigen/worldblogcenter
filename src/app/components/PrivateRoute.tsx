@@ -11,13 +11,18 @@ const PrivateRoute = ({children}:{ children: React.ReactNode }) => {
     const {userInfo} = useAppSelector((state) => state.auth)
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
+    
+    console.log('Prior: ',userInfo)
     const {data, isFetching} = useGetUserDetailsQuery(undefined, {
         pollingInterval: 900000,
     })
-
+    
     useEffect(() => {
-        if(data) dispatch(setCredentials(data))
+        if(data) {
+            dispatch(setCredentials(data))
+            console.log('after: ',userInfo)
+        }
+        
     }, [data, dispatch])
     useEffect(() => {
         if(!isFetching && ! data){

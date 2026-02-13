@@ -29,7 +29,7 @@ const BlogPostPage = () => {
       <div className="m-5">
         <nav className="nav justify-between">
           <button type="button" className="btn btn-primary" onClick={() => {navigate('/blogs')}} >Back to Blogs</button>
-          { userInfo.id == post.user_id?
+          { userInfo.id === post.user_id?
 
             <div className="flex">
               <UpdateBlogPost oldImageUrl={post.image_url}/>
