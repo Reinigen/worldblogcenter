@@ -29,7 +29,7 @@ const BlogPostPage = () => {
           <button type="button" className="btn btn-primary" onClick={() => {navigate('/blogs')}} >Back to Blogs</button>
           <div className="flex">
             <UpdateBlogPost oldImageUrl={post.image_url}/>
-            <DeleteBlogPost />
+            <DeleteBlogPost oldImageUrl={post.image_url} />
           </div>
         </nav>
         <div className="m-5">

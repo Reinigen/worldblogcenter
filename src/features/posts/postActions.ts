@@ -4,14 +4,14 @@ import { supabase } from "../../supabase";
 type PostPayload = {
     title: string,
     content: string,
-    image_url: string,
+    image_url: string | null,
 }
 
 type UpdatePostPayload = {
     blog_id: string,
     title: string,
     content: string,
-    image_url: string,
+    image_url: string | null,
 }
 
 export const createPost = createAsyncThunk('post/create', async (post:PostPayload,{rejectWithValue}) => {

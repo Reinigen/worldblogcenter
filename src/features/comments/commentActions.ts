@@ -5,14 +5,13 @@ import { supabase } from "../../supabase"
 type CommentPayload = {
     blog_id: string,
     content: string,
-    image_url: string,
+    image_url: string | null,
 }
 
 type UpdateCommentPayload = {
     commentId: string,
-    blog_id: string,
     content: string,
-    image_url: string,
+    image_url: string| null,
 }
 
 export const createComment = createAsyncThunk('comment/create', async (comment:CommentPayload,{rejectWithValue}) => {
@@ -36,7 +35,6 @@ export const updateComment = createAsyncThunk('comment/:commentId/update', async
     const {data, error} = await supabase
     .from('comments')
     .update({
-        blog_id: updateComment.blog_id,
         content: updateComment.content,
         image_url: updateComment.image_url,
         updated_at: new Date().toISOString()

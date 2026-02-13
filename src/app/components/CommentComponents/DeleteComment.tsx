@@ -25,7 +25,7 @@ const DeleteCommentButton = ({commentId, oldImageUrl}:{commentId:string, oldImag
     }
 
     return(
-        <div className="px-3">
+        <div>
             <button type="button" className="btn btn-danger" onClick={() => {deleteCommentFunction()}}>
                 Delete
             </button>

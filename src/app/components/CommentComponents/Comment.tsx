@@ -1,9 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useAppDispatch } from '../../hooks'
 import { useGetUserDetailsQuery } from '../../services/auth/authService'
 import DeleteCommentButton from './DeleteComment'
+import UpdateCommentButton from './UpdateComment'
+import { setCredentials } from '../../../features/auth/authSlice'
 
 type CommentProps = {
   comment: any
@@ -11,26 +13,35 @@ type CommentProps = {
 const Comment = ({comment}:CommentProps) => {
   const dispatch = useAppDispatch()
   const commentid:string = comment.id
-  const {data, isFetching} = useGetUserDetailsQuery(comment.user_id)
+  //Can update to use Profile table but it's too much to set up right now
+  const {data:commentUser} = useGetUserDetailsQuery(comment.user_id)
+  const {data, isFetching} = useGetUserDetailsQuery(undefined, {
+    pollingInterval: 90000,
+  })
+  
   
   if(!commentid) return
-  if(!data) return
+  useEffect(() => {
+      if(data)dispatch(setCredentials(data))
+    }, [data, dispatch])
   return (
     <div>
-      <div className="flex justify-around card mx-3 mt-3 w-full" >
+      <div className="flex justify-around card mx-3 my-3 w-full" >
         <div className='d-block'>
           {comment.image_url && (
             <img src={comment.image_url}  className="card-img-bottom rounded" alt="..." style={{ width: "100%", height: "150px", objectFit: "cover" }}/>
           )}
-          <h3 className='ms-3 mt-3'>Commented by: {data.email}</h3>
+          <h3 className='ms-3 mt-3'>Commented by: {commentUser?.email}</h3>
           <div className="card-body w-full">
               <p className="card-text text-truncate">{comment.content}</p>
           </div>
-
         </div>
-        <div className='flex'>
-          <DeleteCommentButton commentId={commentid} />
-        </div>
+        {comment.user_id == data?.id ?
+          <div className='flex justify-evenly mb-3 px-3'>
+            <UpdateCommentButton commentId={commentid} oldImageUrl={comment.image_url}/>
+            <DeleteCommentButton commentId={commentid} oldImageUrl={comment.image_url} />
+          </div>:""
+        }
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import * as bootstrap from 'bootstrap'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Spinner from '../util/Spinner'
 import { useAppDispatch } from '../../hooks'
@@ -17,6 +17,7 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
     const {blogId} = useParams()
     const navigate = useNavigate()
     const {data: post} = useGetPostQuery({id: blogId!}, {skip:!blogId})
+    const [image, setImage] = useState('')
     const {register,handleSubmit} = useForm({
         values: {
             title: post?.title || '',
@@ -34,20 +35,29 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
         if(data) dispatch(setCredentials(data))
         }, [data, dispatch])
     
-    const submitForm = async (formData:any) => {
-        if(!blogId) return
-
-        let imageUrl = oldImageUrl || ''
-        if(formData.file && formData.file.length > 0){
-            const file = formData.file[0]
-            const fileName = `${Date.now()}-${file.name}`
-            // delete the old image from the bucket
+    const deleteImage = async () => {
+        // delete the old image from the bucket
             if (oldImageUrl) {
                 const oldPath = oldImageUrl.split('/WorldCenterBucket/')[1]
                 await supabase.storage
                     .from('WorldCenterBucket')
                     .remove([oldPath])
             }
+    }
+
+    const submitForm = async (formData:any) => {
+        if(!blogId) return
+
+        let imageUrl = oldImageUrl || null
+        if(imageUrl && image == 'remove'){
+            await deleteImage()
+            imageUrl=null
+        }
+        if(formData.file && formData.file.length > 0){
+            const file = formData.file[0]
+            const fileName = `${Date.now()}-${file.name}`
+            
+            await deleteImage()
     
             const { error: uploadError } = await supabase.storage
                 .from('WorldCenterBucket')
@@ -110,9 +120,12 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
                         <div className='flex flex-col pb-4'>
                             <input type="text" placeholder='Title' className='form-control p-3 mt-3' { ...register('title')} required />
                             <textarea placeholder='Content' className='form-control p-3 mt-3' { ...register('content')} required />
-                            <button>
+                            <div>
                                 <input type="file" className='form-control p-3 mt-3' { ...register('file')} />
-                            </button>
+                                <button type='button' className='btn btn-danger ms-1' onClick={(e)=> {
+                                    e.preventDefault()
+                                    setImage('remove')}}>Delete file</button>
+                            </div>
                             <button type="submit" className="btn btn-primary mt-3">{isFetching ? <Spinner /> : 'Post'}</button>
                         </div>
                     </form>
