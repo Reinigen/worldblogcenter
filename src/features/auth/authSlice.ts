@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { registerUser, userLogin } from "./authActions";
+import { stat } from "fs";
+import { supabase } from "../../supabase";
 
 export type AuthState = {
     loading: boolean
@@ -20,12 +22,17 @@ const initialState:AuthState = {
     success: false, // for monitoring the registration process.
 }
 
+const logoutUser = async () => {
+    await supabase.auth.signOut()
+}
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
         logout: (state) => {
             localStorage.removeItem('userToken'),
+            logoutUser(),
             state.loading = false,
             state.userInfo = null,
             state.userToken = null,

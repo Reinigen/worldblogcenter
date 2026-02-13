@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { useAppDispatch } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 import { useGetUserDetailsQuery } from '../../services/auth/authService'
 import DeleteCommentButton from './DeleteComment'
 import UpdateCommentButton from './UpdateComment'
@@ -13,17 +13,13 @@ type CommentProps = {
 const Comment = ({comment}:CommentProps) => {
   const dispatch = useAppDispatch()
   const commentid:string = comment.id
-  //Can update to use Profile table but it's too much to set up right now
+  //Can update to use Profile table but it's too much to set up right
   const {data:commentUser} = useGetUserDetailsQuery(comment.user_id)
-  const {data, isFetching} = useGetUserDetailsQuery(undefined, {
-    pollingInterval: 90000,
-  })
+  const {userInfo} = useAppSelector((state) => state.auth)
   
   
   if(!commentid) return
-  useEffect(() => {
-      if(data)dispatch(setCredentials(data))
-    }, [data, dispatch])
+
   return (
     <div>
       <div className="flex justify-around card mx-3 my-3 w-full" >
@@ -36,7 +32,7 @@ const Comment = ({comment}:CommentProps) => {
               <p className="card-text text-truncate">{comment.content}</p>
           </div>
         </div>
-        {comment.user_id == data?.id ?
+        {comment.user_id === userInfo?.id ?
           <div className='flex justify-evenly mb-3 px-3'>
             <UpdateCommentButton commentId={commentid} oldImageUrl={comment.image_url}/>
             <DeleteCommentButton commentId={commentid} oldImageUrl={comment.image_url} />

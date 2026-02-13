@@ -8,16 +8,18 @@ import Spinner from "../components/util/Spinner"
 import { useGetCommentsQuery } from "../services/comments/commentService"
 import Comment from "../components/CommentComponents/Comment"
 import CreateCommentForm from "../components/CommentComponents/CreateComment"
+import { useAppSelector } from "../hooks"
 
 
 const BlogPostPage = () => {
   const navigate = useNavigate()
   const { blogId } = useParams()
+  const {userInfo} = useAppSelector((state) => state.auth)
   
   // posts
   const { data: post } = useGetPostQuery({id: blogId!}, {skip: !blogId})
   //comments
-  const {data: comments, isFetching} = useGetCommentsQuery({blogId: blogId!}, {skip: !blogId}) 
+  const { data: comments } = useGetCommentsQuery({blogId: blogId!}, {skip: !blogId}) 
   if (!post) return <Spinner />
   const postCreatedDate: Date = new Date(post.created_at)
   const postUpdatedDate: Date = new Date(post.updated_at ? post.updated_at: "")
@@ -27,10 +29,14 @@ const BlogPostPage = () => {
       <div className="m-5">
         <nav className="nav justify-between">
           <button type="button" className="btn btn-primary" onClick={() => {navigate('/blogs')}} >Back to Blogs</button>
-          <div className="flex">
-            <UpdateBlogPost oldImageUrl={post.image_url}/>
-            <DeleteBlogPost oldImageUrl={post.image_url} />
-          </div>
+          { userInfo.id == post.user_id?
+
+            <div className="flex">
+              <UpdateBlogPost oldImageUrl={post.image_url}/>
+              <DeleteBlogPost oldImageUrl={post.image_url} />
+            </div>
+            :""
+          }
         </nav>
         <div className="m-5">
           {post.image_url && (

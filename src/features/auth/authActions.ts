@@ -34,3 +34,8 @@ export const userLogin = createAsyncThunk('auth/login', async ({email, password}
     localStorage.setItem('userToken', data.session.access_token)
     return data
 })
+
+export const logoutUser = createAsyncThunk('auth/logout', async () => {
+    await supabase.auth.signOut()
+    
+})
