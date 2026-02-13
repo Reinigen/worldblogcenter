@@ -5,19 +5,17 @@ import { useAppDispatch, useAppSelector } from '../../hooks'
 import { useGetUserDetailsQuery } from '../../services/auth/authService'
 import DeleteCommentButton from './DeleteComment'
 import UpdateCommentButton from './UpdateComment'
-import { setCredentials } from '../../../features/auth/authSlice'
+import { useGetProfileQuery } from '../../services/auth/profileService'
+
 
 type CommentProps = {
   comment: any
 }
 const Comment = ({comment}:CommentProps) => {
-  const dispatch = useAppDispatch()
   const commentid:string = comment.id
   //Can update to use Profile table but it's too much to set up right
-  const {data:commentUser} = useGetUserDetailsQuery(comment.user_id)
+  const {data: profile } = useGetProfileQuery({userId: comment.user_id})
   const {userInfo} = useAppSelector((state) => state.auth)
-  
-  
   if(!commentid) return
 
   return (
@@ -27,7 +25,7 @@ const Comment = ({comment}:CommentProps) => {
           {comment.image_url && (
             <img src={comment.image_url}  className="card-img-bottom rounded" alt="..." style={{ width: "100%", height: "150px", objectFit: "cover" }}/>
           )}
-          <h3 className='ms-3 mt-3'>Commented by: {commentUser?.email}</h3>
+          <h3 className='ms-3 mt-3'>Commented by: {profile?.username || profile?.email || "Unknown"}</h3>
           <div className="card-body w-full">
               <p className="card-text text-truncate">{comment.content}</p>
           </div>

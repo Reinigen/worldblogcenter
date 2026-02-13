@@ -8,7 +8,6 @@ export const authApi = createApi({
     endpoints: (builder) => ({
         getUserDetails: builder.query<User | null, void>({
             async queryFn() {
-                console.log('Pulling')
                 const {data, error} = await supabase.auth.getUser()
                 if (error) return {error};
                 return { data: data.user }
