@@ -11,12 +11,13 @@ import { updateComment } from "../../../features/comments/commentActions"
 import * as bootstrap from "bootstrap"
 import { useGetUserDetailsQuery } from "../../services/auth/authService"
 import { setCredentials } from "../../../features/auth/authSlice"
+import { C } from "vitest/dist/chunks/reporters.d.BFLkQcL6.js"
 
 const UpdateCommentButton = ({commentId, oldImageUrl }: { commentId: string| null,oldImageUrl: string | null }) => {
     const dispatch = useAppDispatch()
     const {data: comment} = useGetCommentQuery({id: commentId!}, {skip:!commentId})
     
-    const [image, setImage] = useState('')
+    const [removeImage, setRemoveImage] = useState(false)
     const navigate = useNavigate()
     const {register, handleSubmit} = useForm({
         values: {
@@ -46,7 +47,7 @@ const UpdateCommentButton = ({commentId, oldImageUrl }: { commentId: string| nul
         const submitForm = async (formData:any) => {
             if(!comment) return
             let imageUrl = oldImageUrl || null
-            if(imageUrl && image == 'remove'){
+            if(imageUrl && removeImage == true){
                     await deleteImage()
                     imageUrl=null
             }
@@ -115,9 +116,21 @@ const UpdateCommentButton = ({commentId, oldImageUrl }: { commentId: string| nul
                                 <textarea placeholder='Content' className='form-control p-3 mt-3' { ...register('content')} required />
                                 <div>
                                     <input type="file" className='form-control p-3 mt-3' { ...register('file')} />
+                                    {removeImage 
+                                    ? 
+                                    <button className="btn btn-warning ms-1"
+                                    onClick={(e) =>{
+                                        e.preventDefault()
+                                        setRemoveImage(false)
+                                    }}
+                                    >Undo</button>
+                                    :
                                     <button type='button' className='btn btn-danger ms-1' onClick={(e)=> {
                                         e.preventDefault()
-                                        setImage('remove')}}>Delete file</button>
+                                        setRemoveImage(true)
+                                        }}>Delete file</button>
+
+                                    }
                                 </div>
                                 <button type="submit" className="btn btn-primary mt-3">{isFetching ? <Spinner /> : 'Comment'}</button>
                             </div>

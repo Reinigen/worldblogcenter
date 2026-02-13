@@ -17,7 +17,7 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
     const {blogId} = useParams()
     const navigate = useNavigate()
     const {data: post} = useGetPostQuery({id: blogId!}, {skip:!blogId})
-    const [image, setImage] = useState('')
+    const [removeImage, setRemoveImage] = useState(false)
     const {register,handleSubmit} = useForm({
         values: {
             title: post?.title || '',
@@ -49,7 +49,7 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
         if(!blogId) return
 
         let imageUrl = oldImageUrl || null
-        if(imageUrl && image == 'remove'){
+        if(imageUrl && removeImage == true){
             await deleteImage()
             imageUrl=null
         }
@@ -122,9 +122,21 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
                             <textarea placeholder='Content' className='form-control p-3 mt-3' { ...register('content')} required />
                             <div>
                                 <input type="file" className='form-control p-3 mt-3' { ...register('file')} />
-                                <button type='button' className='btn btn-danger ms-1' onClick={(e)=> {
-                                    e.preventDefault()
-                                    setImage('remove')}}>Delete file</button>
+                                {removeImage 
+                                    ? 
+                                    <button className="btn btn-warning ms-1"
+                                    onClick={(e) =>{
+                                        e.preventDefault()
+                                        setRemoveImage(false)
+                                    }}
+                                    >Undo</button>
+                                    :
+                                    <button type='button' className='btn btn-danger ms-1' onClick={(e)=> {
+                                        e.preventDefault()
+                                        setRemoveImage(true)
+                                        }}>Delete file</button>
+
+                                    }
                             </div>
                             <button type="submit" className="btn btn-primary mt-3">{isFetching ? <Spinner /> : 'Post'}</button>
                         </div>
