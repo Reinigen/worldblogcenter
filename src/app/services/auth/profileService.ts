@@ -5,6 +5,7 @@ import { supabase } from "../../../supabase";
 export const profileApi = createApi({
     reducerPath: 'profileApi',
     baseQuery: fakeBaseQuery(),
+    tagTypes: ['Profiles'],
     endpoints: (builder) => ({
         getProfile: builder.query({
             async queryFn({ userId }: { userId: string }) {

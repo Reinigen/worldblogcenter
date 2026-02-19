@@ -9,6 +9,7 @@ import { useGetCommentsQuery } from "../services/comments/commentService"
 import Comment from "../components/CommentComponents/Comment"
 import CreateCommentForm from "../components/CommentComponents/CreateComment"
 import { useAppSelector } from "../hooks"
+import { useGetProfileQuery } from "../services/auth/profileService"
 
 
 const BlogPostPage = () => {
@@ -20,6 +21,9 @@ const BlogPostPage = () => {
   const { data: post } = useGetPostQuery({id: blogId!}, {skip: !blogId})
   //comments
   const { data: comments } = useGetCommentsQuery({blogId: blogId!}, {skip: !blogId}) 
+  //user that posted
+  const userId = post?.user_id
+  const {data: user} = useGetProfileQuery({userId: userId!}, {skip: !userId})
   if (!post) return <Spinner />
   const postCreatedDate: Date = new Date(post.created_at)
   const postUpdatedDate: Date = new Date(post.updated_at ? post.updated_at: "")
@@ -43,6 +47,7 @@ const BlogPostPage = () => {
             <img src={post.image_url ?? undefined} className="m-3" alt="..." />
           )}
           <h1 className="m-3" >{post.title}</h1>
+          <h3>Posted by: {user?.username}</h3>
           <h3>Posted on: {postCreatedDate.toLocaleDateString()}</h3>
           {post.updated_at ? <h3>Updated on: {postUpdatedDate.toLocaleDateString()}</h3>:""}
           <p className="m-5">{post.content}</p>

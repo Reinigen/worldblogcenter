@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
+import { useGetUserDetailsQuery } from "../../services/auth/authService"
+import { useGetProfileQuery } from "../../services/auth/profileService"
 
 type CardProps = {
   blog_id: string
@@ -10,6 +12,7 @@ type CardProps = {
 
 const BlogCard = ({blog_id, blog}: CardProps) => {
   const navigate = useNavigate()
+  const {data} = useGetProfileQuery({userId:blog.user_id}, {skip: !blog.user_id})
   return (
     <div>
       <div className="card mx-3 mt-3" style={{ width: "30vw"}}>
@@ -18,8 +21,10 @@ const BlogCard = ({blog_id, blog}: CardProps) => {
             )}
             <div className="card-body">
                 <h5 className="card-title">{blog.title}</h5>
+                <h6>Posted by: {data?.username}</h6>
                 <p className="card-text text-truncate">{blog.content}</p>
                 <button onClick={() => navigate(`/blogs/${blog_id}`)} className="btn btn-primary">Open full blog</button>
+
 
                 {/* Just open a modal that has the comments HAHAHAHHAHAHAHAHA */}
             </div>

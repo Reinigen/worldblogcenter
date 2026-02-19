@@ -74,14 +74,13 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
             imageUrl = urlData.publicUrl
         }
         
-        dispatch(updatePost({
+        await dispatch(updatePost({
             blog_id: blogId,
             title: formData.title,
             content: formData.content,
             image_url: imageUrl
-        })).then(() => {
-            dispatch(postApi.util.invalidateTags(['Posts']))
-        })
+        }))
+        dispatch(postApi.util.invalidateTags(['Posts']))
 
         // close the modal
         const modal = document.getElementById('updateBlog')
@@ -121,21 +120,26 @@ const UpdateBlogPost = ({ oldImageUrl }: { oldImageUrl: string | null }) => {
                             <input type="text" placeholder='Title' className='form-control p-3 mt-3' { ...register('title')} required />
                             <textarea placeholder='Content' className='form-control p-3 mt-3' { ...register('content')} required />
                             <div>
-                                <input type="file" className='form-control p-3 mt-3' { ...register('file')} />
-                                {removeImage 
-                                    ? 
-                                    <button className="btn btn-warning ms-1"
-                                    onClick={(e) =>{
-                                        e.preventDefault()
-                                        setRemoveImage(false)
-                                    }}
-                                    >Undo</button>
+                                {oldImageUrl && (removeImage
+                                    ?
+                                    <div>
+                                        <input type="file" className='form-control p-3 mt-3' { ...register('file')} />
+                                        <button type='button' className="btn btn-warning ms-1"
+                                        onClick={(e) =>{
+                                            e.preventDefault()
+                                            setRemoveImage(false)
+                                        }}
+                                        >Undo</button>
+                                    </div>
                                     :
                                     <button type='button' className='btn btn-danger ms-1' onClick={(e)=> {
                                         e.preventDefault()
                                         setRemoveImage(true)
                                         }}>Delete file</button>
-
+                                    )}
+                                    {!oldImageUrl ?
+                                    <input type="file" className='form-control p-3 mt-3' { ...register('file')} />
+                                    : <></>
                                     }
                             </div>
                             <button type="submit" className="btn btn-primary mt-3">{isFetching ? <Spinner /> : 'Post'}</button>
