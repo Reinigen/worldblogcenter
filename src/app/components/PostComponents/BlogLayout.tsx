@@ -33,7 +33,7 @@ const BlogLayout = () => {
             <nav className="w-full mt-3" aria-label="Page navigation example">
                 <CreateBlogPost />
             </nav>
-            <div className="flex card-group">
+            <div className="row row-cols-1 row-cols-md-3 my-5 g-3">
                 {posts?.map((post: any) => (
                     <BlogCard key ={post.id} blog={post} blog_id={post.id} />
                 ))}
